@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { cache } from '../../cache';
 import { config } from '../../config';
 import {

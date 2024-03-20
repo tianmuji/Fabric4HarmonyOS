@@ -144,3 +144,4 @@ export struct FabricCanvas {
 }
 
 export * as fabric from './fabric'
+export { IndexTest } from './Test'

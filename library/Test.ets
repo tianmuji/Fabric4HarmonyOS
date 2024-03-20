@@ -1,15 +1,14 @@
-import { IndexTest } from '@ohos/fabric'
-@Entry
 @Component
-struct Index {
+struct IndexTest {
   @State message: string = 'Hello World';
   build() {
     Row() {
       Column() {
-        IndexTest()
       }
       .width('100%')
     }
     .height('100%')
   }
 }
+
+export { IndexTest }
