@@ -52,7 +52,6 @@ export class InteractiveFabricObject<
 
   declare snapAngle?: TDegree;
   declare snapThreshold?: TDegree;
-
   declare lockMovementX: boolean;
   declare lockMovementY: boolean;
   declare lockRotation: boolean;

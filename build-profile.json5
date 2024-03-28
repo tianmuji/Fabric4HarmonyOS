@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/yujie_wu/.ohos/config/default_Fabric4HarmonyOS_TDg5H0QjXphSr6IOAYo7kHj_LfEWv6JbEEwn7u96pn0=.cer",
+          "storePassword": "0000001B1EEA7CE908C7EBCA160C6CF9D4A2F25446B86277F2E1C93737683D8B87BE2C1AC7C34BC8A6DAD3",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B6CA05808A988CEC11ABE0342E1C33087F2CF78D4C2685EF54FC55C40357E729E4829EDE4C47B30",
+          "profile": "/Users/yujie_wu/.ohos/config/default_Fabric4HarmonyOS_TDg5H0QjXphSr6IOAYo7kHj_LfEWv6JbEEwn7u96pn0=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/yujie_wu/.ohos/config/default_Fabric4HarmonyOS_TDg5H0QjXphSr6IOAYo7kHj_LfEWv6JbEEwn7u96pn0=.p12"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
@@ -35,6 +49,10 @@
     {
       "name": "library",
       "srcPath": "./library"
+    },
+    {
+      "name": "eraser",
+      "srcPath": "./eraser"
     }
   ]
 }

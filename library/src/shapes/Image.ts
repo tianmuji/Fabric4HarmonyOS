@@ -673,6 +673,7 @@ export class FabricImage<
     // const size = this.getOriginalSize();
     // todo
     // 都使用图片的宽高
+    console.log('width', width.toString())
     this.width = width;
     this.height = height;
     this.elWidth = width;

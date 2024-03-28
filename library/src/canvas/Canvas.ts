@@ -639,16 +639,61 @@ export class Canvas extends SelectableCanvas implements CanvasOptions {
     // );
   }
 
-  handleMouseMove(e: TPointerEvent) {
-    this._onMouseMove(e)
+  handleMouseMove(event: TouchEvent) {
+    const helper = {
+      timestamp: event.timestamp,
+      target: event.target,
+      source: event.source,
+      x: event.changedTouches[0].x,
+      y: event.changedTouches[0].y,
+      // todo
+      // error in card?
+      windowX: event.changedTouches[0].screenX,
+      windowY: event.changedTouches[0].screenY
+      // stopPropagation: event.stopPropagation
+    }
+    this._onMouseMove(helper)
   }
 
-  handleMouseDown(e: TPointerEvent) {
-    this._onMouseDown(e)
+  handleMouseDown(event: ClickEvent | TouchEvent) {
+    if (event.touches) {
+      const helper = {
+        timestamp: event.timestamp,
+        target: event.target,
+        source: event.source,
+        x: event.changedTouches[0].x,
+        y: event.changedTouches[0].y,
+        // todo
+        // error in card?
+        windowX: event.changedTouches[0].screenX,
+        windowY: event.changedTouches[0].screenY
+        // stopPropagation: event.stopPropagation
+      }
+      this._onMouseDown(helper)
+    } else {
+      this._onMouseDown(event)
+    }
+
   }
 
-  handleMouseUp(e: TPointerEvent) {
-    this._onMouseUp(e)
+  handleMouseUp(event: ClickEvent | TouchEvent) {
+    if (event.touches) {
+      const helper = {
+        timestamp: event.timestamp,
+        target: event.target,
+        source: event.source,
+        x: event.changedTouches[0].x,
+        y: event.changedTouches[0].y,
+        // todo
+        // error in card?
+        windowX: event.changedTouches[0].screenX,
+        windowY: event.changedTouches[0].screenY
+        // stopPropagation: event.stopPropagation
+      }
+      this._onMouseUp(helper)
+    } else {
+      this._onMouseUp(event)
+    }
   }
 
   handleDragStart(e: TPointerEvent) {

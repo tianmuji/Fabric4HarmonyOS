@@ -1,3 +1,4 @@
+// @ts-ignore
 import { cache } from '../../cache';
 import { config } from '../../config';
 import {
@@ -110,6 +111,7 @@ export class FabricObject<
   declare minScaleLimit: number;
 
   declare opacity: number;
+  declare erasable: boolean | 'deep';
 
   declare paintFirst: 'fill' | 'stroke';
   declare fill: string | TFiller | null;
@@ -183,7 +185,7 @@ export class FabricObject<
    * @default undefined
    * @private
    */
-  declare _cacheCanvas?: ImageBitmap;
+  declare _cacheCanvas?: any;
 
   /**
    * Size of the cache canvas, width
@@ -440,8 +442,8 @@ export class FabricObject<
       additionalHeight = 0,
       shouldResizeCanvas = false;
     if (dimensionsChanged) {
-      const canvasWidth = (this._cacheCanvas as HTMLCanvasElement).width,
-        canvasHeight = (this._cacheCanvas as HTMLCanvasElement).height,
+      const canvasWidth = (this._cacheCanvas as CanvasRenderingContext2D).width,
+        canvasHeight = (this._cacheCanvas as CanvasRenderingContext2D).height,
         sizeGrowing = width > canvasWidth || height > canvasHeight,
         sizeShrinking =
           (width < canvasWidth * 0.9 || height < canvasHeight * 0.9) &&
@@ -466,8 +468,10 @@ export class FabricObject<
     }
     if (shouldRedraw) {
       if (shouldResizeCanvas) {
-        canvas.width = Math.ceil(width + additionalWidth);
-        canvas.height = Math.ceil(height + additionalHeight);
+        // todo
+        // never resize
+        // canvas.width = Math.ceil(width + additionalWidth);
+        // canvas.height = Math.ceil(height + additionalHeight);
       } else {
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -769,7 +773,7 @@ export class FabricObject<
       return;
     }
     ctx.save();
-    this._setupCompositeOperation(ctx);
+    // this._setupCompositeOperation(ctx);
     this.drawSelectionBackground(ctx);
     this.transform(ctx);
     this._setOpacity(ctx);
@@ -1352,7 +1356,7 @@ export class FabricObject<
    * @return {FabricImage} Object cloned as image.
    */
   cloneAsImage(options: any): FabricImage {
-    const canvasEl = this.toCanvasElement(options);
+    const canvasEl = this.toCanvasElement(options) as any;
     // TODO: how to import Image w/o an import cycle?
     const ImageClass = classRegistry.getClass<typeof FabricImage>('image');
     return new ImageClass(canvasEl);

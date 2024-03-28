@@ -588,7 +588,7 @@ export class StaticCanvas<
       path = this.clipPath;
     this.calcViewportBoundaries();
     this.clearContext(ctx);
-    // ctx.imageSmoothingEnabled = this.imageSmoothingEnabled;
+    ctx.imageSmoothingEnabled = this.imageSmoothingEnabled;
     // ctx.patternQuality = 'best';
     this.fire('before:render', { ctx });
     this._renderBackground(ctx);

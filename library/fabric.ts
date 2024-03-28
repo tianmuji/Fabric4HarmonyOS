@@ -9,7 +9,14 @@ export * from './src/typedefs';
 
 export * from './src/EventTypeDefs';
 export { Observable } from './src/Observable';
+export interface TFabricConfig {
+  radius: number, left: number, top: number, fill: string, strokeWidth: number, transparentCorners: false, erasable: boolean
+}
 
+export interface TFabricEventMapper extends ClickEvent {
+  stopPropagation: void
+  timestamp: number,
+}
 export type {
   TCanvasSizeOptions,
   TSVGExportOptions,
@@ -166,3 +173,5 @@ export * as util from './src/util';
 
 export { Control } from './src/controls/Control';
 export * as controlsUtils from './src/controls';
+
+export { TPointerEvent } from './src/EventTypeDefs'

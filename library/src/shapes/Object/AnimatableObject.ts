@@ -37,7 +37,6 @@ export abstract class AnimatableObject<
   ): Record<string, TAnimation<T>> {
     return Object.entries(animatable).reduce((acc, [key, endValue]) => {
       acc[key] = this._animate(key, endValue, options);
-      console.log('acc', JSON.stringify(acc), key, endValue, JSON.stringify(options))
       return acc;
     }, {} as Record<string, TAnimation<T>>);
   }
