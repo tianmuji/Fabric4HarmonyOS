@@ -8,7 +8,7 @@ export class PatternBrush extends PencilBrush {
   // declare source?: CanvasImageSource;
   //
   // @ts-ignore
-  declare source?: CanvasImageSource;
+  declare source?: CanvasRenderingContext2D;
 
   constructor(canvas: Canvas) {
     super(canvas);

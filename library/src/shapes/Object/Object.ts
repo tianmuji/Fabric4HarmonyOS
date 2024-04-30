@@ -773,7 +773,7 @@ export class FabricObject<
       return;
     }
     ctx.save();
-    // this._setupCompositeOperation(ctx);
+    this._setupCompositeOperation(ctx);
     this.drawSelectionBackground(ctx);
     this.transform(ctx);
     this._setOpacity(ctx);
