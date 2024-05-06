@@ -1,6 +1,6 @@
 
 import * as fabric from './../../Index'
-import { FabricObject, Group, Path } from './../../fabric';
+import { FabricObject, Group, Path, TMat2D } from './../../fabric';
 import { ClippingGroup } from './ClippingGroup';
 import { draw } from './ErasingEffect';
 
@@ -147,7 +147,7 @@ export async function eraseCanvasDrawable(
           vpt,
           [1, 0, 0, 1, -d.x, -d.y],
           object.calcTransformMatrix(),
-        ])
+        ]) as TMat2D
       : object.calcTransformMatrix()
   );
   commitErasing(object, clone);

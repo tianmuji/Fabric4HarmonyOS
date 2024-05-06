@@ -73,6 +73,7 @@ export class PencilBrush extends BaseBrush {
     // capture coordinates immediately
     // this allows to draw dots (when movement never occurs)
     this._addPoint(pointer);
+    console.log('pointer', JSON.stringify(pointer))
     this._render();
   }
 

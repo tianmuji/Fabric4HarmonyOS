@@ -1,6 +1,7 @@
 import { EraserBrush } from '@ohos/eraser'
 import * as fabric from '@ohos/fabric'
 import { TOptions, RectProps, CircleProps, TestInterface, Control } from '@ohos/fabric'
+
 interface TTextUnderline {
   underline: boolean
 }
@@ -11,8 +12,10 @@ struct Index {
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings)
   private upperSettings: RenderingContextSettings = new RenderingContextSettings(true)
   private upperContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.upperSettings)
+  private effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
+  private effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.effectSettings)
   private fabricInstance: fabric.Canvas = new fabric.Canvas(this.context, 400, 400, { offsetWidth: 0, offsetHeight: 0 })
-  private isDrawingMode = false
+  private isDrawingMode = true
   private canvasWidth: number = 400
   private canvasHeight: number = 500
   private image: ImageBitmap = new ImageBitmap('pages/images/printio.png')
@@ -25,16 +28,18 @@ struct Index {
         Canvas(this.context)
           .onReady(() => {
             const canvas = new fabric.Canvas(this.context, this.canvasWidth, this.canvasHeight, { offsetWidth: 0, offsetHeight: 0 })
-            if (this.isDrawingMode) {
-              canvas.isDrawingMode = this.isDrawingMode
-              // const eraser = new fabric.PencilBrush(canvas)
-              const eraser = new EraserBrush(canvas)
-              eraser.width = 20
-              eraser.color = 'white'
-              canvas.freeDrawingBrush = eraser
-            }
+            setTimeout(() => {
+              if (this.isDrawingMode) {
+                canvas.isDrawingMode = this.isDrawingMode
+                // const eraser = new fabric.PencilBrush(canvas)
+                const eraser = new EraserBrush(canvas, this.effectContext)
+                eraser.width = 20
+                eraser.color = 'white'
+                canvas.freeDrawingBrush = eraser
+              }
+            }, 1000)
             // basic shape
-            const rectConfig: TOptions<RectProps> = { width: 5, height: 5, left: 250, top: 300, fill: '#f55', strokeWidth: 0 }
+            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0 }
             const rect = new fabric.Rect(rectConfig)
             const circleConfig: TOptions<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0 }
             const circle = new fabric.Circle(circleConfig)
@@ -72,7 +77,8 @@ struct Index {
               height: 200,
               top: 250,
               rotate: 40,
-              left: 40
+              left: 40,
+              erasable: false
             }
             const imageInstance = new fabric.FabricImage(this.image, imageConfig)
             canvas.add(imageInstance)
@@ -132,9 +138,9 @@ struct Index {
               // todo
               // internal bug
               // need to set line-height
-              lineHeight: 0.5,
-              width: 300,
-              fontSize: 36,
+              erasable: false,
+              width: 200,
+              fontSize: 30,
               fontFamily: 'Helvetica',
               fill: 'white',
               backgroundColor: 'black',
@@ -150,24 +156,20 @@ struct Index {
                   28: styleU,
                 },
                 1: {
-
                 },
               },
               left: 20,
               top: 20,
               textAlign: 'center',
-              borderColor: '#19BCAA',
-              borderScaleFactor: 2,
               cornerSize: 24,
-              controlsAboveOverlay: true,
-              borderOpacityWhenMoving: 1,
-              editable: true,
-              editingBorderColor: '#19BCAA',
-              hoverCursor: 'default'
             }
-            const text:string = "This lib is free for everyone.\nSome things are not.\nPeople behind FabricJS acknowledge that Black people have to fight for basic rights, against systemic racism, unequal opportunities and injustice across the 🌎.\nWe know this is wrong and we are 💔. 💪🏽💪🏾💪🏿!"
+            const text:string = "This lib is free for everyone.\nSome things are not.\nPeople behind FabricJS acknowledge that Black people have to fight for basic rights, against systemic racism, unequal opportunities and injustice across the .\nWe know this is wrong and we are sad!"
             const supportText = new fabric.Textbox(text, this.context, textConfig)
+            const ctx = this.context
+            const test = ctx.measureText('free for everyone')
+            console.log('fasdfsdf', JSON.stringify(test))
             canvas.add(supportText)
+            console.log('this.context.font', this.context.font)
             supportText.setControlsVisibility({
               tr: false,
               bl: false,
@@ -176,15 +178,18 @@ struct Index {
               mr: false,
               mt: false
             })
+            supportText.set('lineHeight', supportText.lineHeight / 2)
+            console.log('supportText', JSON.stringify(supportText))
             const deleteControlConfig: TOptions<Control> = {
               x: -0.5,
-              y: -0.5,
+              y: 0.5,
               cursorStyle: 'default',
               mouseUpHandler: (eventData, transform) => {
                 canvas.remove(transform.target)
               },
+              actionHandler: fabric.controlsUtils.scalingEqually,
               render: (ctx, left, top, styleOveride, fabricObject) => {
-                const size = 24;
+                const size = 20;
                 ctx.save();
                 ctx.translate(left, top);
                 ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
@@ -193,19 +198,19 @@ struct Index {
               }
             }
             const scaleControlConfig: TOptions<Control> ={
-            x: 0.5,
-            y: 0.5,
-            cursorStyle: 'default',
-            actionHandler: fabric.controlsUtils.scalingEqually,
-            render: (ctx, left, top, styleOveride, fabricObject) => {
-              const size = 24;
-              ctx.save();
-              ctx.translate(left, top);
-              ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
-              ctx.drawImage(this.scaleImage, -size / 2, -size / 2, size, size);
-              ctx.restore();
+              x: 0.5,
+              y: 0.5,
+              cursorStyle: 'default',
+              actionHandler: fabric.controlsUtils.scalingEqually,
+              render: (ctx, left, top, styleOveride, fabricObject) => {
+                const size = 24;
+                ctx.save();
+                ctx.translate(left, top);
+                ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+                ctx.drawImage(this.scaleImage, -size / 2, -size / 2, size, size);
+                ctx.restore();
+              }
             }
-          }
             rect.setControlsVisibility({
               tr: false,
               tl: true,
@@ -287,6 +292,7 @@ struct Index {
           })
           .width(this.canvasWidth)
           .height(this.canvasHeight)
+          .backgroundColor('#F5DC62')
         Canvas(this.upperContext)
           .width(this.canvasWidth)
           .height(this.canvasHeight)
@@ -301,6 +307,12 @@ struct Index {
             }
             setTimeout(() => {
               this.fabricInstance.setUpper(this.upperContext)
+              const ctx = this.upperContext
+              ctx.beginPath()
+              ctx.font = "40px";
+              const test = ctx.measureText('This lib is free for everyone')
+              console.log('test', JSON.stringify(test))
+              ctx.fillText("This lib is free for everyone", 10, 50);
             }, 1000)
           })
           // .onClick((e: ClickEvent) => {

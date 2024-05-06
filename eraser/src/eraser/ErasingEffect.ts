@@ -93,7 +93,7 @@ export function draw(
       return { object, clipPath: object.clipPath };
     }
   });
-
+  console.log('objects', JSON.stringify(objects))
   // draw
   drawCanvas(ctx, canvas, objects);
 

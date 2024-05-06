@@ -128,6 +128,7 @@ export class Textbox<
     }
     // clear cache and re-calculate height
     this.height = this.calcTextHeight();
+    console.log('calcTextHeight', this.height)
   }
 
   /**

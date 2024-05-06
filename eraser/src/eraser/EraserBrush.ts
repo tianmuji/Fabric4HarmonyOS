@@ -2,6 +2,8 @@ import * as fabric from '@ohos/fabric';
 import { FabricObject, Group, Path, TMat2D } from '@ohos/fabric';
 import { ClippingGroup } from './ClippingGroup';
 import { draw } from './ErasingEffect';
+import { Observable } from '@ohos/fabric'
+type GlobalCompositeOperation = "color" | "color-burn" | "color-dodge" | "copy" | "darken" | "destination-atop" | "destination-in" | "destination-out" | "destination-over" | "difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "lighter" | "luminosity" | "multiply" | "overlay" | "saturation" | "screen" | "soft-light" | "source-atop" | "source-in" | "source-out" | "source-over" | "xor";
 
 export const drawImage = (
   destination: CanvasRenderingContext2D,
@@ -10,10 +12,11 @@ export const drawImage = (
 ) => {
   destination.save();
   destination.imageSmoothingEnabled = true;
-  destination.imageSmoothingQuality = 'high';
+  // destination.imageSmoothingQuality = 'high';
   destination.globalCompositeOperation = globalCompositeOperation;
   destination.resetTransform();
-  destination.drawImage(source.canvas, 0, 0);
+  const sourceData = source.getPixelMap(0, 0, source.width, source.height)
+  destination.drawImage(sourceData, 0, 0);
   destination.restore();
 };
 
@@ -32,14 +35,14 @@ export const erase = (
 ) => {
   // clip destination
   drawImage(destination, source, 'destination-out');
-
   // draw erasing effect
   if (erasingEffect) {
     drawImage(source, erasingEffect, 'source-in');
   } else {
+    console.log('clear test')
     source.save();
     source.resetTransform();
-    source.clearRect(0, 0, source.canvas.width, source.canvas.height);
+    source.clearRect(0, 0, source.width, source.height);
     source.restore();
   }
 };
@@ -57,7 +60,7 @@ export type EventDetailMap = {
 
 export type ErasingEventType = keyof EventDetailMap;
 
-export type ErasingEvent<T extends ErasingEventType> = CustomEvent<
+export type ErasingEvent<T extends ErasingEventType> = Observable<
   EventDetailMap[T]
 >;
 
@@ -219,20 +222,17 @@ export class EraserBrush extends fabric.PencilBrush {
 
   effectContext: CanvasRenderingContext2D;
 
-  private eventEmitter: EventTarget;
+  private eventEmitter: Observable<any>;
   private active = false;
   private _disposer?: Function;
 
-  constructor(canvas: fabric.Canvas) {
+  constructor(canvas: fabric.Canvas, ctx: CanvasRenderingContext2D) {
     super(canvas);
-    const el = document.createElement('canvas');
-    const ctx = el.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get context');
-    }
+    const effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
+    const effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(effectSettings)
     // setCanvasDimensions(el, ctx, canvas, this.canvas.getRetinaScaling());
-    this.effectContext = ctx;
-    this.eventEmitter = new EventTarget();
+    this.effectContext = effectContext;
+    this.eventEmitter = new Observable();
   }
 
   /**
@@ -241,11 +241,13 @@ export class EraserBrush extends fabric.PencilBrush {
   on<T extends ErasingEventType>(
     type: T,
     cb: (evt: ErasingEvent<T>) => any,
-    options?: boolean | AddEventListenerOptions
+    options?: boolean | any
   ) {
-    this.eventEmitter.addEventListener(type, cb as EventListener, options);
+    // todo
+    // do not need options
+    this.eventEmitter.on(type, cb);
     return () =>
-      this.eventEmitter.removeEventListener(type, cb as EventListener, options);
+      this.eventEmitter.off(type, cb);
   }
 
   drawEffect() {
@@ -263,7 +265,7 @@ export class EraserBrush extends fabric.PencilBrush {
    * @override
    */
   _setBrushStyles(ctx: CanvasRenderingContext2D = this.canvas.contextTop) {
-    super._setBrushStyles(ctx);
+    super._setBrushStyles(this.canvas.lowerCanvasEl);
     ctx.strokeStyle = 'black';
   }
 
@@ -279,8 +281,10 @@ export class EraserBrush extends fabric.PencilBrush {
    * @override erase
    */
   _render(ctx: CanvasRenderingContext2D = this.canvas.getTopContext()): void {
-    super._render(ctx);
-    erase(this.canvas.getContext(), ctx, this.effectContext);
+    const lowerCtx = this.canvas.lowerCanvasEl
+    lowerCtx.globalCompositeOperation = 'destination-out';
+    super._render(lowerCtx);
+    // erase(this.canvas.getContext(), ctx, this.effectContext);
   }
 
   /**
@@ -290,34 +294,37 @@ export class EraserBrush extends fabric.PencilBrush {
     pointer: fabric.Point,
     context: fabric.TEvent<fabric.TPointerEvent>
   ): void {
-    if (
-      !this.eventEmitter.dispatchEvent(
-        new CustomEvent('start', { detail: context, cancelable: true })
-      )
-    ) {
-      return;
-    }
+    // if (
+    //   !this.eventEmitter.dispatchEvent(
+    //     new CustomEvent('start', { detail: context, cancelable: true })
+    //   )
+    // ) {
+    //   return;
+    // }
+    // todo
+    // just fire event
+    // ignore dispatchEvent return value
+    this.eventEmitter.fire('start', { detail: context, cancelable: true })
 
     this.active = true;
 
-    this.eventEmitter.dispatchEvent(
-      new CustomEvent('redraw', {
+    this.eventEmitter.fire(
+      'redraw', {
         detail: { type: 'start' },
         cancelable: true,
       })
-    ) && this.drawEffect();
-
+    this.drawEffect()
     // consider a different approach
     this._disposer = this.canvas.on('after:render', ({ ctx }) => {
-      if (ctx !== this.canvas.getContext()) {
-        return;
-      }
-      this.eventEmitter.dispatchEvent(
-        new CustomEvent('redraw', {
+      // if (ctx !== this.canvas.getContext()) {
+      //   return;
+      // }
+      this.eventEmitter.fire(
+        'redraw', {
           detail: { type: 'render' },
           cancelable: true,
         })
-      ) && this.drawEffect();
+      this.drawEffect();
       this._render();
     });
 
@@ -331,10 +338,10 @@ export class EraserBrush extends fabric.PencilBrush {
     pointer: fabric.Point,
     context: fabric.TEvent<fabric.TPointerEvent>
   ): void {
-    this.active &&
-      this.eventEmitter.dispatchEvent(
-        new CustomEvent('move', { detail: context, cancelable: true })
-      ) &&
+      // this.eventEmitter.dispatchEvent(
+      //   new CustomEvent('move', { detail: context, cancelable: true })
+      // )
+      this.eventEmitter.fire('move', { detail: context, cancelable: true  })
       super.onMouseMove(pointer, context);
   }
 
@@ -417,38 +424,51 @@ export class EraserBrush extends fabric.PencilBrush {
   _finalizeAndAddPath(): void {
     const points = this['_points'];
 
-    if (points.length < 2) {
-      this.eventEmitter.dispatchEvent(
-        new CustomEvent('cancel', {
-          cancelable: false,
-        })
-      );
+    if (points.length <= 2) {
+      // this.eventEmitter.dispatchEvent(
+      //   new CustomEvent('cancel', {
+      //     cancelable: false,
+      //   })
+      // );
+      this.eventEmitter.fire('cancel', { cancelable: false })
       return;
     }
 
-    const path = this.createPath(this.convertPointsToSVGPath(points));
-    const targets = walk(this.canvas.getObjects(), path);
+    // const path = this.createPath(this.convertPointsToSVGPath(points));
+    // const targets = walk(this.canvas.getObjects(), path);
 
-    this.eventEmitter.dispatchEvent(
-      new CustomEvent('end', {
-        detail: {
-          path,
-          targets,
-        },
-        cancelable: true,
-      })
-    ) && this.commit({ path, targets });
+    // this.eventEmitter.dispatchEvent(
+    //   new CustomEvent('end', {
+    //     detail: {
+    //       path,
+    //       targets,
+    //     },
+    //     cancelable: true,
+    //   })
+    // )
+    // this.eventEmitter.fire('end', {
+    //   detail: {
+    //     path,
+    //     targets,
+    //   },
+    //   cancelable: true
+    // })
+    // this.commit({ path, targets });
+    //
+    // this.canvas.clearContext(this.canvas.contextTop);
+    // this.canvas.requestRenderAll();
 
-    this.canvas.clearContext(this.canvas.contextTop);
-    this.canvas.requestRenderAll();
-
-    this._resetShadow();
+    // this._resetShadow();
   }
 
   dispose() {
-    const { canvas } = this.effectContext;
+    // const { canvas } = this.effectContext;
     // prompt GC
-    canvas.width = canvas.height = 0;
+    // canvas.width = canvas.height = 0;
+    // todo
+    // emit dispose event?
+    this.eventEmitter.fire('dispose')
+    // emit
     // release ref?
     // delete this.effectContext
   }

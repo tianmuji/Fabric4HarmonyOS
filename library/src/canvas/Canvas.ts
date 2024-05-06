@@ -949,6 +949,7 @@ export class Canvas extends SelectableCanvas implements CanvasOptions {
     // reset the target information about which corner is selected
     target && (target.__corner = undefined);
     if (shouldRender) {
+      console.log('shoulder')
       this.requestRenderAll();
     } else if (!isClick && !(this._activeObject as IText)?.isEditing) {
       this.renderTop();

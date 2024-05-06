@@ -1,4 +1,4 @@
-import { FabricObject, Path, TMat2D, util } from 'fabric';
+import { FabricObject, Path, TMat2D, util } from '@ohos/fabric';
 
 /**
  * Utility to apply a clip path to an object, merging with its existing clip path.
@@ -23,7 +23,7 @@ export function clipObject(
         object.calcTransformMatrix()
       ),
       clipPath.calcTransformMatrix(),
-    ])
+    ]) as TMat2D
   );
 
   //  We need to clip `path` with both `clipPath` and it's own clip path if existing (`path.clipPath`)
