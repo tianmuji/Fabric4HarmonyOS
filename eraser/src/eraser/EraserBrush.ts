@@ -39,7 +39,6 @@ export const erase = (
   if (erasingEffect) {
     drawImage(source, erasingEffect, 'source-in');
   } else {
-    console.log('clear test')
     source.save();
     source.resetTransform();
     source.clearRect(0, 0, source.width, source.height);
