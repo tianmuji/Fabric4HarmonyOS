@@ -1,4 +1,4 @@
-import { roundSnapshotOptions } from '../../../../../../../Documents/fabric.js-master/jest.extend';
+import { roundSnapshotOptions } from '../../../jest.extend';
 import { cache } from '../../cache';
 import { config } from '../../config';
 import { FabricText } from './Text';

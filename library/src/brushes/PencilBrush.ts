@@ -20,7 +20,7 @@ export class PencilBrush extends BaseBrush {
   /**
    * Discard points that are less than `decimate` pixel distant from each other
    * @type Number
-   * @default 0.4
+   * @default 0.4o
    */
   decimate = 0.4;
 
