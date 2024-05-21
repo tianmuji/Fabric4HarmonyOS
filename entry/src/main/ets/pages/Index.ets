@@ -45,20 +45,6 @@ struct Index {
             const triangleConfig: TOptions<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0 }
             const triangle = new fabric.Triangle(triangleConfig)
             canvas.add(rect, circle, triangle)
-            // let top: number = 10
-            // let left: number = 10
-            // for (let i = 0; i < 100; i++) {
-            //   top += 10
-            //   left += 10
-            //   if (left >= 300) {
-            //     left = 0
-            //   }
-            //   rectConfig.top = top
-            //   rectConfig.left = left
-            //   const newRect = new fabric.Rect(rectConfig)
-            //   canvas.add(newRect)
-            // }
-            // basic shape with stroke
             const rectConfigWithStroke: TOptions<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black' }
             const rectWithStroke = new fabric.Rect(rectConfigWithStroke)
             const circleConfigWithStroke: TOptions<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black' }
@@ -101,33 +87,8 @@ struct Index {
             }
             const animateInstance = new fabric.FabricImage(this.animateImage, animateImageConfig)
 
-            // 设置图片位置 缩放 透明度 旋转角度
-            // animateInstance.set({
-            //   left: 50,
-            //   top: 540,
-            //   angle: 10,
-            //   opacity: 0.1
-            // })
-            //   .scale(2);
-            // canvas.add(animateInstance)
-
 
             let isStart = true;
-
-            // animateInstance.animate({
-            //   'left': isStart ? 300 : 50,
-            //   opacity: isStart ? 1 : 0.1,
-            //   angle: isStart ? 100 : 10,
-            // }, {
-            //   duration: 1500,
-            //   // todo
-            //   // do not support bind ?
-            //   onChange: canvas.requestRenderAll.bind(canvas),
-            //   onComplete: () => {
-            //     isStart = !isStart
-            //     console.log('onComplete')
-            //   }
-            // });
 
             // text rendering
             const styleU: TTextUnderline = {

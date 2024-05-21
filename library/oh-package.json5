@@ -2,21 +2,27 @@
   "publishConfig": {
     "access": "public"
   },
+  "author": "yujie_wu",
   "keywords": [
     "canvas",
-    "free drawing",
-    "eraser",
-    "OpenHarmony",
-    "HarmonyOS"
+    "graphic",
+    "graphics",
+    "SVG",
+    "node-canvas",
+    "parser",
+    "HTML5",
+    "object model"
   ],
-  "author": "yujie_wu",
-  "description": "draw objects and interact with them in OOP way",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabricjs/fabric.js"
+  },
+  "description": "adopted from fabric.js to run in HarmonyOS, Object model for HTML5 canvas, and SVG-to-canvas parser. su",
   "main": "Index.ts",
-  "repository": "",
   "type": "module",
-  "version": "1.0.0",
+  "version": "6.0.0-rc1",
   "dependencies": {
   },
-  "license": "Apache 2.0",
+  "license": "MIT",
   "name": "fabric"
 }
