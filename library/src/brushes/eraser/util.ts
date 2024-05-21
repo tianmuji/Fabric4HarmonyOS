@@ -1,4 +1,4 @@
-import { FabricObject, Path, TMat2D, util } from '@ohos/fabric';
+import { FabricObject, Path, TMat2D, util } from '../../../Index';
 
 /**
  * Utility to apply a clip path to an object, merging with its existing clip path.

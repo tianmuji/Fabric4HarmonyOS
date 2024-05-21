@@ -1,9 +1,22 @@
 {
-  "name": "library",
-  "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "canvas",
+    "free drawing",
+    "eraser",
+    "OpenHarmony",
+    "HarmonyOS"
+  ],
+  "author": "yujie_wu",
+  "description": "draw objects and interact with them in OOP way",
   "main": "Index.ts",
-  "author": "",
-  "license": "Apache-2.0",
-  "dependencies": {}
+  "repository": "",
+  "type": "module",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "license": "Apache 2.0",
+  "name": "fabric"
 }

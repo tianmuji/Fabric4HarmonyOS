@@ -1,4 +1,4 @@
-import { Canvas, Group, FabricObject } from '@ohos/fabric';
+import { Canvas, Group, FabricObject } from '../../../Index';
 import { ClippingGroup } from './ClippingGroup';
 
 function walk(objects: FabricObject[]): FabricObject[] {

@@ -1,4 +1,3 @@
-import { EraserBrush } from '@ohos/eraser'
 import * as fabric from '@ohos/fabric'
 import { TOptions, RectProps, CircleProps, TestInterface, Control } from '@ohos/fabric'
 
@@ -15,7 +14,7 @@ struct Index {
   private effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
   private effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.effectSettings)
   private fabricInstance: fabric.Canvas = new fabric.Canvas(this.context, 400, 400, { offsetWidth: 0, offsetHeight: 0 })
-  private isDrawingMode = true
+  private isDrawingMode = false
   private canvasWidth: number = 400
   private canvasHeight: number = 500
   private image: ImageBitmap = new ImageBitmap('pages/images/printio.png')
@@ -32,7 +31,7 @@ struct Index {
               if (this.isDrawingMode) {
                 canvas.isDrawingMode = this.isDrawingMode
                 // const eraser = new fabric.PencilBrush(canvas)
-                const eraser = new EraserBrush(canvas, this.effectContext)
+                const eraser = new fabric.EraserBrush(canvas, this.effectContext)
                 eraser.width = 20
                 eraser.color = 'white'
                 canvas.freeDrawingBrush = eraser

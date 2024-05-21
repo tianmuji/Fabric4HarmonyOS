@@ -1,8 +1,8 @@
-import * as fabric from '@ohos/fabric';
-import { FabricObject, Group, Path, TMat2D } from '@ohos/fabric';
+import * as fabric from '../../../Index';
+import { FabricObject, Group, Path, TMat2D } from '../../../Index';
 import { ClippingGroup } from './ClippingGroup';
 import { draw } from './ErasingEffect';
-import { Observable } from '@ohos/fabric'
+import { Observable } from '../../../Index'
 type GlobalCompositeOperation = "color" | "color-burn" | "color-dodge" | "copy" | "darken" | "destination-atop" | "destination-in" | "destination-out" | "destination-over" | "difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "lighter" | "luminosity" | "multiply" | "overlay" | "saturation" | "screen" | "soft-light" | "source-atop" | "source-in" | "source-out" | "source-over" | "xor";
 
 export const drawImage = (
