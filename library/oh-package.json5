@@ -13,10 +13,7 @@
     "HTML5",
     "object model"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/fabricjs/fabric.js"
-  },
+  "repository": "",
   "description": "adopted from fabric.js to run in HarmonyOS, Object model for HTML5 canvas, and SVG-to-canvas parser. su",
   "main": "Index.ts",
   "type": "module",
