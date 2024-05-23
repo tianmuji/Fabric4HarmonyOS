@@ -2,7 +2,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "author": "yujie_wu",
+  "author": "Yujie_Wu",
   "keywords": [
     "canvas",
     "graphic",
@@ -13,11 +13,11 @@
     "HTML5",
     "object model"
   ],
-  "repository": "",
+  "repository": "https://gitee.com/csweb_intsig/fabric.js",
   "description": "adopted from fabric.js to run in HarmonyOS, Object model for HTML5 canvas, and SVG-to-canvas parser. su",
   "main": "Index.ts",
   "type": "module",
-  "version": "6.0.0-rc1",
+  "version": "6.0.0-rc2",
   "dependencies": {
   },
   "license": "MIT",

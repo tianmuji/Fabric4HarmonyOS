@@ -656,7 +656,6 @@ export class FabricText<
           break;
       }
     }
-    console.log('_getFontDeclaration', JSON.stringify(this._getFontDeclaration(charStyle, forMeasuring)))
     ctx.font = this._getFontDeclaration(charStyle, forMeasuring);
   }
 
@@ -1028,7 +1027,6 @@ export class FabricText<
     for (let i = 1, len = this._textLines[lineIndex].length; i < len; i++) {
       maxHeight = Math.max(this.getHeightOfChar(lineIndex, i), maxHeight);
     }
-    console.log(maxHeight)
 
     return (this.__lineHeights[lineIndex] =
       maxHeight * this.lineHeight * this._fontSizeMult);
@@ -1538,7 +1536,6 @@ export class FabricText<
     property: T
   ): this[T] {
     const charStyle = this._getStyleDeclaration(lineIndex, charIndex);
-    console.log('charIndex', JSON.stringify(property), JSON.stringify(this[property]))
     return (charStyle[property] ?? this[property]) as this[T];
   }
 

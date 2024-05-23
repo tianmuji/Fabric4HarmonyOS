@@ -93,10 +93,9 @@ export function draw(
       return { object, clipPath: object.clipPath };
     }
   });
-  console.log('objects', JSON.stringify(objects))
+  console.log('objects', objects.length.toString(), JSON.stringify(objects))
   // draw
   drawCanvas(ctx, canvas, objects);
-
   // restore
   restore.forEach((entry) => {
     if (!entry) {

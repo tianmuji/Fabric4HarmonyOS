@@ -1,5 +1,7 @@
 import * as fabric from '@ohos/fabric'
 import { TOptions, RectProps, CircleProps, TestInterface, Control } from '@ohos/fabric'
+import { EraserBrush, ErasingEvent } from '@ohos/eraser'
+import { EventDetailMap } from '@ohos/eraser/src/eraser/EraserBrush'
 
 interface TTextUnderline {
   underline: boolean
@@ -14,7 +16,7 @@ struct Index {
   private effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
   private effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.effectSettings)
   private fabricInstance: fabric.Canvas = new fabric.Canvas(this.context, 400, 400, { offsetWidth: 0, offsetHeight: 0 })
-  private isDrawingMode = false
+  private isDrawingMode = true
   private canvasWidth: number = 400
   private canvasHeight: number = 500
   private image: ImageBitmap = new ImageBitmap('pages/images/printio.png')
@@ -31,25 +33,25 @@ struct Index {
               if (this.isDrawingMode) {
                 canvas.isDrawingMode = this.isDrawingMode
                 // const eraser = new fabric.PencilBrush(canvas)
-                const eraser = new fabric.EraserBrush(canvas, this.effectContext)
+                const eraser = new EraserBrush(canvas, this.effectContext)
                 eraser.width = 20
                 eraser.color = 'white'
                 canvas.freeDrawingBrush = eraser
               }
             }, 1000)
             // basic shape
-            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0 }
+            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0, erasable: false }
             const rect = new fabric.Rect(rectConfig)
-            const circleConfig: TOptions<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0 }
+            const circleConfig: TOptions<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0, erasable: false }
             const circle = new fabric.Circle(circleConfig)
-            const triangleConfig: TOptions<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0 }
+            const triangleConfig: TOptions<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0, erasable: false }
             const triangle = new fabric.Triangle(triangleConfig)
             canvas.add(rect, circle, triangle)
-            const rectConfigWithStroke: TOptions<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black' }
+            const rectConfigWithStroke: TOptions<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black', erasable: false }
             const rectWithStroke = new fabric.Rect(rectConfigWithStroke)
-            const circleConfigWithStroke: TOptions<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black' }
+            const circleConfigWithStroke: TOptions<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black', erasable: false }
             const circleWithStroke = new fabric.Circle(circleConfigWithStroke)
-            const triangleConfigWithStroke: TOptions<RectProps> = { width: 80, height: 80, left: 160, top: 140, fill: '#55f', strokeWidth: 1, stroke: 'black' }
+            const triangleConfigWithStroke: TOptions<RectProps> = { width: 80, height: 80, left: 160, top: 140, fill: '#55f', strokeWidth: 1, stroke: 'black', erasable: false }
             const triangleWithStroke = new fabric.Triangle(triangleConfigWithStroke)
             canvas.add(rectWithStroke, circleWithStroke, triangleWithStroke)
 
@@ -121,7 +123,7 @@ struct Index {
               left: 20,
               top: 20,
               textAlign: 'center',
-              cornerSize: 24,
+              cornerSize: 24
             }
             const text:string = "This lib is free for everyone.\nSome things are not.\nPeople behind FabricJS acknowledge that Black people have to fight for basic rights, against systemic racism, unequal opportunities and injustice across the .\nWe know this is wrong and we are sad!"
             const supportText = new fabric.Textbox(text, this.context, textConfig)
@@ -252,7 +254,7 @@ struct Index {
           })
           .width(this.canvasWidth)
           .height(this.canvasHeight)
-          .backgroundColor('#F5DC62')
+          .zIndex(1)
         Canvas(this.upperContext)
           .width(this.canvasWidth)
           .height(this.canvasHeight)
@@ -267,14 +269,9 @@ struct Index {
             }
             setTimeout(() => {
               this.fabricInstance.setUpper(this.upperContext)
-              const ctx = this.upperContext
-              ctx.beginPath()
-              ctx.font = "40px";
-              const test = ctx.measureText('This lib is free for everyone')
-              console.log('test', JSON.stringify(test))
-              ctx.fillText("This lib is free for everyone", 10, 50);
             }, 1000)
           })
+          .zIndex(2)
           // .onClick((e: ClickEvent) => {
           //   this.fabricInstance.handleMouseDown(e)
           //   // todo
@@ -290,6 +287,12 @@ struct Index {
               this.fabricInstance.handleMouseUp(event)
             }
           })
+        Canvas(this.effectContext)
+          .width(this.canvasWidth)
+          .height(this.canvasHeight)
+          .position({x: 0, y: 0})
+          .visibility(Visibility.Hidden)
+          .zIndex(0)
       }
     }
     .width(this.canvasWidth)

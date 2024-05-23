@@ -48,7 +48,6 @@ export { PencilBrush } from './src/brushes/PencilBrush';
 export { CircleBrush } from './src/brushes/CircleBrush';
 export { SprayBrush } from './src/brushes/SprayBrush';
 export { PatternBrush } from './src/brushes/PatternBrush';
-export { EraserBrush } from './src/brushes/eraser/EraserBrush';
 
 export {
   FabricObject,

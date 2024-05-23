@@ -37,6 +37,7 @@ export const erase = (
   drawImage(destination, source, 'destination-out');
   // draw erasing effect
   if (erasingEffect) {
+    console.log('erasingEffect', 'erasingEffect')
     drawImage(source, erasingEffect, 'source-in');
   } else {
     source.save();
@@ -52,6 +53,7 @@ export type EventDetailMap = {
   end: {
     path: fabric.Path;
     targets: fabric.FabricObject[];
+    detail: any
   };
   redraw: { type: 'start' | 'render' };
   cancel: never;
@@ -59,12 +61,20 @@ export type EventDetailMap = {
 
 export type ErasingEventType = keyof EventDetailMap;
 
-export type ErasingEvent<T extends ErasingEventType> = Observable<
+export interface CustomEvent<T = any> extends Observable<T> {
+  /** Returns any custom data event was created with. Typically used for synthetic events. */
+  readonly detail: T;
+  /** @deprecated */
+  initCustomEvent(type: string, bubbles?: boolean, cancelable?: boolean, detail?: T): void;
+}
+
+export type ErasingEvent<T extends ErasingEventType> = CustomEvent<
   EventDetailMap[T]
 >;
 
 function walk(objects: FabricObject[], path: Path): FabricObject[] {
   return objects.flatMap((object) => {
+    console.log(JSON.stringify(object.erasable))
     if (!object.erasable || !object.intersectsWithObject(path)) {
       return [];
     } else if (object instanceof Group && object.erasable === 'deep') {
@@ -227,10 +237,8 @@ export class EraserBrush extends fabric.PencilBrush {
 
   constructor(canvas: fabric.Canvas, ctx: CanvasRenderingContext2D) {
     super(canvas);
-    const effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
-    const effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(effectSettings)
     // setCanvasDimensions(el, ctx, canvas, this.canvas.getRetinaScaling());
-    this.effectContext = effectContext;
+    this.effectContext = ctx;
     this.eventEmitter = new Observable();
   }
 
@@ -264,7 +272,7 @@ export class EraserBrush extends fabric.PencilBrush {
    * @override
    */
   _setBrushStyles(ctx: CanvasRenderingContext2D = this.canvas.contextTop) {
-    super._setBrushStyles(this.canvas.lowerCanvasEl);
+    super._setBrushStyles(this.canvas.contextTop);
     ctx.strokeStyle = 'black';
   }
 
@@ -280,10 +288,8 @@ export class EraserBrush extends fabric.PencilBrush {
    * @override erase
    */
   _render(ctx: CanvasRenderingContext2D = this.canvas.getTopContext()): void {
-    const lowerCtx = this.canvas.lowerCanvasEl
-    lowerCtx.globalCompositeOperation = 'destination-out';
-    super._render(lowerCtx);
-    // erase(this.canvas.getContext(), ctx, this.effectContext);
+    super._render(ctx);
+    erase(this.canvas.getContext(), ctx, this.effectContext);
   }
 
   /**
@@ -312,6 +318,7 @@ export class EraserBrush extends fabric.PencilBrush {
         detail: { type: 'start' },
         cancelable: true,
       })
+    console.log('erase start onmousedown')
     this.drawEffect()
     // consider a different approach
     this._disposer = this.canvas.on('after:render', ({ ctx }) => {
@@ -341,7 +348,7 @@ export class EraserBrush extends fabric.PencilBrush {
       //   new CustomEvent('move', { detail: context, cancelable: true })
       // )
       this.eventEmitter.fire('move', { detail: context, cancelable: true  })
-      super.onMouseMove(pointer, context);
+      this.active && super.onMouseMove(pointer, context);
   }
 
   /**
