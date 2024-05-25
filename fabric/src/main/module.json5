@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "library",
+    "name": "fabric",
     "type": "har",
     "deviceTypes": [
       "default",

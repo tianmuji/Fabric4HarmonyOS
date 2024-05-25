@@ -6,6 +6,6 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    '@ohos/fabric': "file:../library"
+    '@ohos/fabric': "file:../fabric"
   }
 }
