@@ -1,3 +1,4 @@
+// @ts-ignore
 import type { ObjectEvents } from '../../EventTypeDefs';
 import { FabricObjectSVGExportMixin } from './FabricObjectSVGExportMixin';
 import { InteractiveFabricObject } from './InteractiveObject';

@@ -1,7 +1,6 @@
-import * as fabric from '@ohos/fabric'
-import { TOptions, RectProps, CircleProps, TestInterface, Control } from '@ohos/fabric'
-import { EraserBrush, ErasingEvent } from '@ohos/eraser'
-import { EventDetailMap } from '@ohos/eraser/src/eraser/EraserBrush'
+import * as fabric from 'fabric'
+import { TOptions, RectProps, CircleProps, Control } from 'fabric'
+import { EraserBrush } from 'eraser'
 
 interface TTextUnderline {
   underline: boolean
@@ -40,26 +39,23 @@ struct Index {
               }
             }, 1000)
             // basic shape
-            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0, erasable: false }
+            const rectConfig: Partial<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0, erasable: false }
             const rect = new fabric.Rect(rectConfig)
-            const circleConfig: TOptions<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0, erasable: false }
+            const circleConfig: Partial<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0, erasable: false }
             const circle = new fabric.Circle(circleConfig)
-            const triangleConfig: TOptions<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0, erasable: false }
+            const triangleConfig: Partial<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0, erasable: false }
             const triangle = new fabric.Triangle(triangleConfig)
             canvas.add(rect, circle, triangle)
-            const rectConfigWithStroke: TOptions<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black', erasable: false }
+            const rectConfigWithStroke: Partial<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black', erasable: false }
             const rectWithStroke = new fabric.Rect(rectConfigWithStroke)
-            const circleConfigWithStroke: TOptions<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black', erasable: false }
+            const circleConfigWithStroke: Partial<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black', erasable: false }
             const circleWithStroke = new fabric.Circle(circleConfigWithStroke)
-            const triangleConfigWithStroke: TOptions<RectProps> = { width: 80, height: 80, left: 160, top: 140, fill: '#55f', strokeWidth: 1, stroke: 'black', erasable: false }
+            const triangleConfigWithStroke: Partial<RectProps> = { width: 80, height: 80, left: 160, top: 140, fill: '#55f', strokeWidth: 1, stroke: 'black', erasable: false }
             const triangleWithStroke = new fabric.Triangle(triangleConfigWithStroke)
             canvas.add(rectWithStroke, circleWithStroke, triangleWithStroke)
 
             // local image
             const imageConfig: TOptions<fabric.ImageProps> = {
-              // todo
-              // how to get image width and height?
-              // why ImageBitmap.width return 0?
               width: 200,
               height: 200,
               top: 250,
@@ -71,8 +67,8 @@ struct Index {
             canvas.add(imageInstance)
 
             // custom path
-            const path: TestInterface = {"type":"path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"shadow":{"color":"#aaf","blur":0,"offsetX":0,"offsetY":0},"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
-            fabric.Path.fromObject(path).then((pathInstance) => {
+            const path: TOptions<fabric.PathProps> = {"type":"path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
+            fabric.Path.fromObject(path).then((pathInstance: fabric.FabricObject) => {
               pathInstance.clone()
                 .then(clone => {
                   clone.stroke = 'red'

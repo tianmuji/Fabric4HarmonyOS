@@ -1,4 +1,4 @@
-import { type FabricObject } from '@ohos/fabric';
+import { type FabricObject } from 'fabric';
 
 let messageID = -1;
 

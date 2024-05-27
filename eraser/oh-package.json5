@@ -1,11 +1,23 @@
 {
-  "name": "eraser",
-  "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Yujie_Wu",
+  "keywords": [
+    "canvas",
+    "graphic",
+    "graphics",
+    "object model",
+    "eraser"
+  ],
+  "repository": "https://gitee.com/csweb_intsig/fabric.js",
+  "description": "eraser for fabric",
   "main": "Index.ts",
-  "author": "",
-  "license": "Apache-2.0",
+  "type": "module",
+  "version": "6.0.0-rc1",
   "dependencies": {
-    '@ohos/fabric': "file:../fabric"
-  }
+    "fabric": "6.0.0-rc1"
+  },
+  "license": "MIT",
+  "name": "eraser4fabric"
 }

@@ -6,7 +6,7 @@ import {
   FabricObject,
   GroupProps,
   classRegistry,
-} from '@ohos/fabric';
+} from 'fabric';
 
 export class ClippingGroup extends Group {
   static type = 'clipping';

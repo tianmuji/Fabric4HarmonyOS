@@ -7,10 +7,7 @@
     "canvas",
     "graphic",
     "graphics",
-    "SVG",
     "node-canvas",
-    "parser",
-    "HTML5",
     "object model"
   ],
   "repository": "https://gitee.com/csweb_intsig/fabric.js",

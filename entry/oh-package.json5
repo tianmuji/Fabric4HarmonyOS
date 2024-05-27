@@ -6,8 +6,8 @@
   "author": "",
   "license": "",
   "dependencies": {
-    '@ohos/fabric': "file:../fabric",
-    '@ohos/eraser': "file:../eraser"
+    "fabric": "6.0.0-rc1",
+    'eraser': "file:../eraser"
   }
 }
 
