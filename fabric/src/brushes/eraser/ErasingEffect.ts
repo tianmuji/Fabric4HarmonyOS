@@ -1,4 +1,4 @@
-import { Canvas, Group, FabricObject } from 'fabric';
+import { Canvas, Group, FabricObject } from './../../../fabric';
 import { ClippingGroup } from './ClippingGroup';
 
 function walk(objects: FabricObject[]): FabricObject[] {

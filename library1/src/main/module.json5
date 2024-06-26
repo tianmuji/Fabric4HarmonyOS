@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "eraser",
+    "name": "library1",
     "type": "har",
     "deviceTypes": [
       "default",

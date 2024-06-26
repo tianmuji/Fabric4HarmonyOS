@@ -6,8 +6,7 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "fabric": "6.0.0-rc1",
-    'eraser': "file:../eraser"
+    "fabric": "v6.0.0-rc1"
   }
 }
 

@@ -51,8 +51,20 @@
       "srcPath": "./fabric"
     },
     {
-      "name": "eraser",
-      "srcPath": "./eraser"
+      "name": "library1",
+      "srcPath": "./library1",
+    },
+    {
+      "name": "library2",
+      "srcPath": "./library2",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }

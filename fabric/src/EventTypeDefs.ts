@@ -348,6 +348,7 @@ export interface CanvasEvents
     CanvasSelectionEvents {
   // brushes
   'before:path:created': { path: FabricObject };
+  'mouse:down': { path: FabricObject };
   'path:created': { path: FabricObject };
 
   // erasing

@@ -1,6 +1,6 @@
 # Changelog
 
-## [next]
+## [6.0.0-rc2]
 
 - fix(util): add repo in oh-package5.json, remove eraser to separate package
 - fix(util): restore old composeMatrix code for performances improvement [#9851](https://github.com/fabricjs/fabric.js/pull/9851)

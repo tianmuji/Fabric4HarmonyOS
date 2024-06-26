@@ -47,7 +47,14 @@ export { PencilBrush } from './src/brushes/PencilBrush';
 export { CircleBrush } from './src/brushes/CircleBrush';
 export { SprayBrush } from './src/brushes/SprayBrush';
 export { PatternBrush } from './src/brushes/PatternBrush';
-
+export { ClippingGroup } from './src/brushes/eraser/ClippingGroup';
+export {
+  EraserBrush,
+  ErasingEvent,
+  eraseCanvasDrawable,
+  eraseObject,
+  type ErasingEventType,
+} from './src/brushes/eraser/EraserBrush';
 export {
   FabricObject,
 
