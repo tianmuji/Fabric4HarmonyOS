@@ -33,7 +33,7 @@ struct Index {
               if (this.isDrawingMode) {
                 canvas.isDrawingMode = this.isDrawingMode
                 // const eraser = new fabric.PencilBrush(canvas)
-                const eraser = new fabric.EraserBrush(canvas)
+                const eraser = new fabric.EraserBrush(canvas, this.effectContext)
                 eraser.width = 20
                 eraser.color = 'white'
                 canvas.freeDrawingBrush = eraser
