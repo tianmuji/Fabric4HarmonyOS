@@ -1,6 +1,5 @@
-import { EraserBrush } from '@ohos/eraser'
-import * as fabric from '@ohos/fabric'
-import { TOptions, RectProps, CircleProps, TestInterface, Control } from '@ohos/fabric'
+import * as fabric from 'fabric'
+import { TOptions, RectProps, CircleProps, Control, Point, CanvasEvents } from 'fabric'
 
 interface TTextUnderline {
   underline: boolean
@@ -15,13 +14,16 @@ struct Index {
   private effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
   private effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.effectSettings)
   private fabricInstance: fabric.Canvas = new fabric.Canvas(this.context, 400, 400, { offsetWidth: 0, offsetHeight: 0 })
-  private isDrawingMode = true
+  private isDrawingMode = false
   private canvasWidth: number = 400
   private canvasHeight: number = 500
   private image: ImageBitmap = new ImageBitmap('pages/images/printio.png')
   private scaleImage: ImageBitmap = new ImageBitmap('pages/images/scale.png')
   private deleteImage: ImageBitmap = new ImageBitmap('pages/images/delete.png')
   private animateImage: ImageBitmap = new ImageBitmap('pages/images/ladybug.png')
+  private operationStack: fabric.FabricObject[] = []
+  private erasingStack: fabric.FabricObject[] = []
+  private erasingUndoStack: fabric.FabricObject[] = []
   build() {
     Row() {
       Column() {
@@ -32,47 +34,29 @@ struct Index {
               if (this.isDrawingMode) {
                 canvas.isDrawingMode = this.isDrawingMode
                 // const eraser = new fabric.PencilBrush(canvas)
-                const eraser = new EraserBrush(canvas, this.effectContext)
+                const eraser = new fabric.EraserBrush(canvas)
                 eraser.width = 20
                 eraser.color = 'white'
                 canvas.freeDrawingBrush = eraser
               }
             }, 1000)
             // basic shape
-            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0 }
+            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0, erasable: false }
             const rect = new fabric.Rect(rectConfig)
-            const circleConfig: TOptions<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0 }
+            const circleConfig: TOptions<CircleProps> = { radius: 30, left: 50, top: 50, fill: 'rgb(50, 205, 50)', strokeWidth: 0, erasable: false }
             const circle = new fabric.Circle(circleConfig)
-            const triangleConfig: TOptions<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0 }
+            const triangleConfig: TOptions<RectProps> = { width: 80, height: 80, left: 150, top: 130, fill: '#55f', strokeWidth: 0, erasable: false }
             const triangle = new fabric.Triangle(triangleConfig)
             canvas.add(rect, circle, triangle)
-            // let top: number = 10
-            // let left: number = 10
-            // for (let i = 0; i < 100; i++) {
-            //   top += 10
-            //   left += 10
-            //   if (left >= 300) {
-            //     left = 0
-            //   }
-            //   rectConfig.top = top
-            //   rectConfig.left = left
-            //   const newRect = new fabric.Rect(rectConfig)
-            //   canvas.add(newRect)
-            // }
-            // basic shape with stroke
-            const rectConfigWithStroke: TOptions<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black' }
+            const rectConfigWithStroke: TOptions<RectProps> = { width: 80, height: 60, left: 110, top: 110, fill: '#f55', strokeWidth: 1, stroke: 'black', erasable: false }
             const rectWithStroke = new fabric.Rect(rectConfigWithStroke)
-            const circleConfigWithStroke: TOptions<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black' }
+            const circleConfigWithStroke: TOptions<CircleProps> = { radius: 30, left: 60, top: 60, fill: 'rgb(50, 205, 50)', strokeWidth: 1, stroke: 'black', erasable: false }
             const circleWithStroke = new fabric.Circle(circleConfigWithStroke)
-            const triangleConfigWithStroke: TOptions<RectProps> = { width: 80, height: 80, left: 160, top: 140, fill: '#55f', strokeWidth: 1, stroke: 'black' }
+            const triangleConfigWithStroke: TOptions<RectProps> = { width: 80, height: 80, left: 160, top: 140, fill: '#55f', strokeWidth: 1, stroke: 'black', erasable: false }
             const triangleWithStroke = new fabric.Triangle(triangleConfigWithStroke)
             canvas.add(rectWithStroke, circleWithStroke, triangleWithStroke)
-
             // local image
             const imageConfig: TOptions<fabric.ImageProps> = {
-              // todo
-              // how to get image width and height?
-              // why ImageBitmap.width return 0?
               width: 200,
               height: 200,
               top: 250,
@@ -81,11 +65,13 @@ struct Index {
               erasable: false
             }
             const imageInstance = new fabric.FabricImage(this.image, imageConfig)
-            canvas.add(imageInstance)
-
+            canvas.backgroundImage = imageInstance
+            canvas.on('object:added', (obj: fabric.FabricObject) => {
+              console.log(JSON.stringify(obj))
+            })
             // custom path
-            const path: TestInterface = {"type":"path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"shadow":{"color":"#aaf","blur":0,"offsetX":0,"offsetY":0},"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
-            fabric.Path.fromObject(path).then((pathInstance) => {
+            const path: TOptions<fabric.PathProps> = {"type":"Path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
+            fabric.Path.fromObject(path).then((pathInstance: fabric.FabricObject) => {
               pathInstance.clone()
                 .then(clone => {
                   clone.stroke = 'red'
@@ -102,33 +88,8 @@ struct Index {
             }
             const animateInstance = new fabric.FabricImage(this.animateImage, animateImageConfig)
 
-            // 设置图片位置 缩放 透明度 旋转角度
-            // animateInstance.set({
-            //   left: 50,
-            //   top: 540,
-            //   angle: 10,
-            //   opacity: 0.1
-            // })
-            //   .scale(2);
-            // canvas.add(animateInstance)
-
 
             let isStart = true;
-
-            // animateInstance.animate({
-            //   'left': isStart ? 300 : 50,
-            //   opacity: isStart ? 1 : 0.1,
-            //   angle: isStart ? 100 : 10,
-            // }, {
-            //   duration: 1500,
-            //   // todo
-            //   // do not support bind ?
-            //   onChange: canvas.requestRenderAll.bind(canvas),
-            //   onComplete: () => {
-            //     isStart = !isStart
-            //     console.log('onComplete')
-            //   }
-            // });
 
             // text rendering
             const styleU: TTextUnderline = {
@@ -161,15 +122,13 @@ struct Index {
               left: 20,
               top: 20,
               textAlign: 'center',
-              cornerSize: 24,
+              cornerSize: 24
             }
             const text:string = "This lib is free for everyone.\nSome things are not.\nPeople behind FabricJS acknowledge that Black people have to fight for basic rights, against systemic racism, unequal opportunities and injustice across the .\nWe know this is wrong and we are sad!"
             const supportText = new fabric.Textbox(text, this.context, textConfig)
             const ctx = this.context
             const test = ctx.measureText('free for everyone')
-            console.log('fasdfsdf', JSON.stringify(test))
             canvas.add(supportText)
-            console.log('this.context.font', this.context.font)
             supportText.setControlsVisibility({
               tr: false,
               bl: false,
@@ -179,10 +138,9 @@ struct Index {
               mt: false
             })
             supportText.set('lineHeight', supportText.lineHeight / 2)
-            console.log('supportText', JSON.stringify(supportText))
             const deleteControlConfig: TOptions<Control> = {
               x: -0.5,
-              y: 0.5,
+              y: -0.5,
               cursorStyle: 'default',
               mouseUpHandler: (eventData, transform) => {
                 canvas.remove(transform.target)
@@ -192,7 +150,7 @@ struct Index {
                 const size = 20;
                 ctx.save();
                 ctx.translate(left, top);
-                ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+                ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle || 0));
                 ctx.drawImage(this.deleteImage, -size / 2, -size / 2, size, size);
                 ctx.restore();
               }
@@ -211,17 +169,13 @@ struct Index {
                 ctx.restore();
               }
             }
+            // rect.setControlVisible('tl', false)
+            // rect.setControlVisible('br', false)
             rect.setControlsVisibility({
-              tr: false,
               tl: true,
-              bl: false,
-              br: true,
-              ml: false,
-              mb: false,
-              mr: false,
-              mt: false,
-              mtr: false
             })
+            rect.centeredScaling = true
+            rect.minScaleLimit = 0.5
             rect.controls.tl = new fabric.Control(deleteControlConfig)
             rect.controls.br = new fabric.Control(scaleControlConfig)
             // custom text
@@ -287,12 +241,69 @@ struct Index {
             }
             const text5 = new fabric.FabricText('and\neven\nalignment', this.context, text5Config);
             canvas.add(text1, text2, text3, text4, text5);
-
+            canvas.selection = false
             this.fabricInstance = canvas
+            // canvas.selection = false
+            this.fabricInstance.on('mousemove', (event: CanvasEvents) => {
+              console.log(JSON.stringify(event))
+              // this.fabricInstance.absolutePan(new Point(event['mouse:move'].x, event['mouse:move'].y))
+            })
           })
           .width(this.canvasWidth)
           .height(this.canvasHeight)
-          .backgroundColor('#F5DC62')
+          .zIndex(1)
+        Button('add')
+          .onClick(() => {
+            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 150, top: 200, fill: '#f55', strokeWidth: 0, erasable: false }
+            const rect = new fabric.Rect(rectConfig)
+            this.fabricInstance.add(rect)
+          })
+        Button('undo')
+          .onClick(() => {
+            if (this.isDrawingMode) {
+              // this.fabricInstance.renderAll()
+              const object = this.erasingStack.pop()
+              if (object) {
+                console.log(JSON.stringify(object))
+                this.fabricInstance.renderAll()
+                // this.fabricInstance.lowerCanvasEl.globalCompositeOperation = 'destination-out'
+                this.erasingStack.forEach(obj => {
+                  if (this.fabricInstance.freeDrawingBrush) {
+                    this.fabricInstance.freeDrawingBrush['_points'] = obj
+                    this.fabricInstance.freeDrawingBrush['_render']()
+                  }
+                })
+                this.erasingUndoStack.push(object)
+              }
+            } else {
+              const object = this.fabricInstance['_objects'].pop()
+              if (object) {
+                this.operationStack.push(object)
+                this.fabricInstance.renderAll()
+              }
+            }
+          })
+        Button('redo')
+          .onClick(() => {
+            if (this.isDrawingMode) {
+              const obj = this.erasingUndoStack.pop()
+              if (obj) {
+                this.erasingStack.push(obj)
+                this.erasingStack.forEach(obj => {
+                  if (this.fabricInstance.freeDrawingBrush) {
+                    this.fabricInstance.freeDrawingBrush['_points'] = obj
+                    this.fabricInstance.freeDrawingBrush['_render']()
+                  }
+                })
+              }
+            } else {
+              const object = this.operationStack.pop()
+              if (object) {
+                this.fabricInstance.add(object)
+                this.fabricInstance.renderAll()
+              }
+            }
+          })
         Canvas(this.upperContext)
           .width(this.canvasWidth)
           .height(this.canvasHeight)
@@ -307,20 +318,15 @@ struct Index {
             }
             setTimeout(() => {
               this.fabricInstance.setUpper(this.upperContext)
-              const ctx = this.upperContext
-              ctx.beginPath()
-              ctx.font = "40px";
-              const test = ctx.measureText('This lib is free for everyone')
-              console.log('test', JSON.stringify(test))
-              ctx.fillText("This lib is free for everyone", 10, 50);
             }, 1000)
           })
-          // .onClick((e: ClickEvent) => {
-          //   this.fabricInstance.handleMouseDown(e)
-          //   // todo
-          //   // mousedown 之后一定是 mouseup?
-          //   this.fabricInstance.handleMouseUp(e)
-          // })
+          .zIndex(2)
+            // .onClick((e: ClickEvent) => {
+            //   this.fabricInstance.handleMouseDown(e)
+            //   // todo
+            //   // mousedown 之后一定是 mouseup?
+            //   this.fabricInstance.handleMouseUp(e)
+            // })
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
               this.fabricInstance.handleMouseDown(event)
@@ -330,6 +336,12 @@ struct Index {
               this.fabricInstance.handleMouseUp(event)
             }
           })
+        Canvas(this.effectContext)
+          .width(this.canvasWidth)
+          .height(this.canvasHeight)
+          .position({x: 0, y: 0})
+          .visibility(Visibility.Hidden)
+          .zIndex(0)
       }
     }
     .width(this.canvasWidth)

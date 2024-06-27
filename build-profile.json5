@@ -47,12 +47,8 @@
       ]
     },
     {
-      "name": "library",
-      "srcPath": "./library"
-    },
-    {
-      "name": "eraser",
-      "srcPath": "./eraser"
+      "name": "fabric",
+      "srcPath": "./fabric"
     }
   ]
 }

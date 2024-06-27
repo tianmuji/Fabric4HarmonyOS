@@ -1,9 +1,0 @@
-{
-  "name": "library",
-  "version": "1.0.0",
-  "description": "Please describe the basic information.",
-  "main": "Index.ts",
-  "author": "",
-  "license": "Apache-2.0",
-  "dependencies": {}
-}
