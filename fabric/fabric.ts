@@ -1,5 +1,3 @@
-import { EraserBrush } from './src/brushes/EraserBrush';
-
 export { getEnv, getFabricWindow, setEnv } from './src/env';
 export { cache } from './src/cache';
 export { VERSION as version, iMatrix } from './src/constants';

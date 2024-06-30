@@ -1,9 +1,20 @@
 import * as fabric from 'fabric'
-import { TOptions, RectProps, CircleProps, Control, Point, CanvasEvents } from 'fabric'
+import { TOptions, RectProps, CircleProps, Control, Point, CanvasEvents, TPointerEventInfo } from 'fabric'
+import { TEventCallback } from 'fabric/src/Observable'
 
 interface TTextUnderline {
   underline: boolean
 }
+
+interface TOperationItem {
+  type: 'eraser' | 'pen'
+  path: fabric.FabricObject
+}
+
+interface TObjectAddedCallBack {
+  target: fabric.FabricObject
+}
+
 @Entry
 @Component
 struct Index {
@@ -14,32 +25,32 @@ struct Index {
   private effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
   private effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.effectSettings)
   private fabricInstance: fabric.Canvas = new fabric.Canvas(this.context, 400, 400, { offsetWidth: 0, offsetHeight: 0 })
-  private isDrawingMode = false
+  private isDrawingMode = true
   private canvasWidth: number = 400
   private canvasHeight: number = 500
   private image: ImageBitmap = new ImageBitmap('pages/images/printio.png')
   private scaleImage: ImageBitmap = new ImageBitmap('pages/images/scale.png')
   private deleteImage: ImageBitmap = new ImageBitmap('pages/images/delete.png')
   private animateImage: ImageBitmap = new ImageBitmap('pages/images/ladybug.png')
-  private operationStack: fabric.FabricObject[] = []
-  private erasingStack: fabric.FabricObject[] = []
-  private erasingUndoStack: fabric.FabricObject[] = []
+  private operationStack: TOperationItem[] = []
+  private operationUndoStack: TOperationItem[] = []
+  private mode: 'eraser' | 'pen' | 'normal' = 'eraser'
   build() {
     Row() {
       Column() {
         Canvas(this.context)
           .onReady(() => {
             const canvas = new fabric.Canvas(this.context, this.canvasWidth, this.canvasHeight, { offsetWidth: 0, offsetHeight: 0 })
-            setTimeout(() => {
-              if (this.isDrawingMode) {
-                canvas.isDrawingMode = this.isDrawingMode
-                // const eraser = new fabric.PencilBrush(canvas)
-                const eraser = new fabric.EraserBrush(canvas)
-                eraser.width = 20
-                eraser.color = 'white'
-                canvas.freeDrawingBrush = eraser
-              }
-            }, 1000)
+            // setTimeout(() => {
+            //   if (this.isDrawingMode) {
+            //     canvas.isDrawingMode = this.isDrawingMode
+            //     const eraser = new fabric.PencilBrush(canvas)
+            //     // const eraser = new fabric.EraserBrush(canvas)
+            //     eraser.width = 20
+            //     eraser.color = 'red'
+            //     canvas.freeDrawingBrush = eraser
+            //   }
+            // }, 1000)
             // basic shape
             const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0, erasable: false }
             const rect = new fabric.Rect(rectConfig)
@@ -66,9 +77,7 @@ struct Index {
             }
             const imageInstance = new fabric.FabricImage(this.image, imageConfig)
             canvas.backgroundImage = imageInstance
-            canvas.on('object:added', (obj: fabric.FabricObject) => {
-              console.log(JSON.stringify(obj))
-            })
+
             // custom path
             const path: TOptions<fabric.PathProps> = {"type":"Path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
             fabric.Path.fromObject(path).then((pathInstance: fabric.FabricObject) => {
@@ -241,68 +250,101 @@ struct Index {
             }
             const text5 = new fabric.FabricText('and\neven\nalignment', this.context, text5Config);
             canvas.add(text1, text2, text3, text4, text5);
-            canvas.selection = false
             this.fabricInstance = canvas
-            // canvas.selection = false
-            this.fabricInstance.on('mousemove', (event: CanvasEvents) => {
-              console.log(JSON.stringify(event))
-              // this.fabricInstance.absolutePan(new Point(event['mouse:move'].x, event['mouse:move'].y))
-            })
+            canvas.selection = false
           })
           .width(this.canvasWidth)
           .height(this.canvasHeight)
           .zIndex(1)
         Button('add')
           .onClick(() => {
-            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 150, top: 200, fill: '#f55', strokeWidth: 0, erasable: false }
+            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 150, top: 200, fill: 'blue', strokeWidth: 0, objectCaching: false }
             const rect = new fabric.Rect(rectConfig)
             this.fabricInstance.add(rect)
+            this.fabricInstance.renderAll()
           })
         Button('undo')
           .onClick(() => {
-            if (this.isDrawingMode) {
-              // this.fabricInstance.renderAll()
-              const object = this.erasingStack.pop()
-              if (object) {
-                console.log(JSON.stringify(object))
-                this.fabricInstance.renderAll()
-                // this.fabricInstance.lowerCanvasEl.globalCompositeOperation = 'destination-out'
-                this.erasingStack.forEach(obj => {
-                  if (this.fabricInstance.freeDrawingBrush) {
-                    this.fabricInstance.freeDrawingBrush['_points'] = obj
-                    this.fabricInstance.freeDrawingBrush['_render']()
-                  }
-                })
-                this.erasingUndoStack.push(object)
-              }
-            } else {
-              const object = this.fabricInstance['_objects'].pop()
-              if (object) {
-                this.operationStack.push(object)
-                this.fabricInstance.renderAll()
+            const operationItem = this.operationStack.pop()
+            if (operationItem && operationItem.type === 'pen') {
+              if (operationItem.type === 'pen') {
+                const object = this.fabricInstance['_objects'].pop()
+                if (object) {
+                  this.operationUndoStack.push({
+                    path: object,
+                    type: 'pen'
+                  })
+                  this.fabricInstance.requestRenderAll()
+                }
+              } else {
+                if (this.fabricInstance.freeDrawingBrush) {
+                  this.fabricInstance.freeDrawingBrush['_points'] = operationItem.path
+                  this.fabricInstance.freeDrawingBrush['_render']()
+                  this.operationUndoStack.push(operationItem)
+                }
               }
             }
           })
         Button('redo')
           .onClick(() => {
-            if (this.isDrawingMode) {
-              const obj = this.erasingUndoStack.pop()
-              if (obj) {
-                this.erasingStack.push(obj)
-                this.erasingStack.forEach(obj => {
-                  if (this.fabricInstance.freeDrawingBrush) {
-                    this.fabricInstance.freeDrawingBrush['_points'] = obj
-                    this.fabricInstance.freeDrawingBrush['_render']()
-                  }
-                })
-              }
-            } else {
-              const object = this.operationStack.pop()
-              if (object) {
-                this.fabricInstance.add(object)
-                this.fabricInstance.renderAll()
+
+            const operationItem = this.operationUndoStack.pop()
+
+            if (operationItem && operationItem.type === 'pen') {
+              if (operationItem.type === 'pen') {
+                const object = this.fabricInstance['_objects'].pop()
+                if (object) {
+                  this.operationUndoStack.push({
+                    path: object,
+                    type: 'pen'
+                  })
+                  this.fabricInstance.requestRenderAll()
+                }
+              } else {
+                if (this.fabricInstance.freeDrawingBrush) {
+                  this.fabricInstance.freeDrawingBrush['_points'] = operationItem.path
+                  this.fabricInstance.freeDrawingBrush['_render']()
+                  this.operationUndoStack.push(operationItem)
+                }
               }
             }
+          })
+        Button('画笔')
+          .onClick(() => {
+            this.mode = 'pen'
+            const pen = new fabric.PencilBrush(this.fabricInstance)
+            pen.width = 20
+            pen.color = 'red'
+            this.fabricInstance.isDrawingMode = true
+            this.fabricInstance.freeDrawingBrush = pen
+            this.fabricInstance.off({'object:added': () => {}})
+            this.fabricInstance.on('object:added', (event: TObjectAddedCallBack) => {
+              this.operationStack.push({
+                path: event.target,
+                type: 'pen'
+              })
+            })
+          })
+        Button('橡皮擦')
+          .onClick(() => {
+            this.mode = 'eraser'
+            this.fabricInstance.isDrawingMode = true
+            const eraser = new fabric.EraserBrush(this.fabricInstance)
+            eraser.width = 20
+            eraser.color = 'white'
+            eraser.on('end', event => {
+              const path = event.path
+              this.operationStack.push({
+                type: 'eraser',
+                path
+              })
+            })
+            this.fabricInstance.freeDrawingBrush = eraser
+          })
+        Button('添加矩形')
+          .onClick(() => {
+            this.mode = 'normal'
+            this.fabricInstance.isDrawingMode = false
           })
         Canvas(this.upperContext)
           .width(this.canvasWidth)

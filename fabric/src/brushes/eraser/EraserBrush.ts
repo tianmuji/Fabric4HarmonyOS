@@ -229,7 +229,7 @@ export class EraserBrush extends fabric.PencilBrush {
     const effectSettings: RenderingContextSettings = new RenderingContextSettings(true)
     const effectContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(effectSettings)
     // setCanvasDimensions(el, ctx, canvas, this.canvas.getRetinaScaling());
-    this.effectContext = effectContext;
+    // this.effectContext = effectContext;
     this.eventEmitter = new Observable();
   }
 
@@ -311,7 +311,7 @@ export class EraserBrush extends fabric.PencilBrush {
         detail: { type: 'start' },
         cancelable: true,
       })
-    this.drawEffect()
+    // this.drawEffect()
     // consider a different approach
     this._disposer = this.canvas.on('after:render', ({ ctx }) => {
       // if (ctx !== this.canvas.getContext()) {
@@ -322,7 +322,7 @@ export class EraserBrush extends fabric.PencilBrush {
           detail: { type: 'render' },
           cancelable: true,
         })
-      this.drawEffect();
+      // this.drawEffect();
       this._render();
     });
 
@@ -457,10 +457,11 @@ export class EraserBrush extends fabric.PencilBrush {
     // })
     // this.commit({ path, targets });
     //
-    // this.canvas.clearContext(this.canvas.contextTop);
-    // this.canvas.requestRenderAll();
-
-    // this._resetShadow();
+    this.canvas.clearContext(this.canvas.contextTop);
+    this.canvas.add(path);
+    this.canvas.requestRenderAll();
+    path.setCoords();
+    this._resetShadow();
   }
 
   dispose() {
