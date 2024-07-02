@@ -73,7 +73,6 @@ export class PencilBrush extends BaseBrush {
     // capture coordinates immediately
     // this allows to draw dots (when movement never occurs)
     this._addPoint(pointer);
-    console.log('pointer', JSON.stringify(pointer))
     this._render();
   }
 
@@ -175,7 +174,6 @@ export class PencilBrush extends BaseBrush {
    * @param {CanvasRenderingContext2D} [ctx]
    */
   _render(ctx: CanvasRenderingContext2D = this.canvas.contextTop) {
-    console.log(JSON.stringify(this._points))
     let p1 = this._points[0],
       p2 = this._points[1];
     this._saveAndTransform(ctx);
