@@ -3,6 +3,8 @@ import { FabricObject, Group, Path, TMat2D } from '../../../fabric';
 import { ClippingGroup } from './ClippingGroup';
 import { draw } from './ErasingEffect';
 import { Observable } from '../../../fabric'
+import { EraserPath } from '../../shapes/EraserPath';
+
 type GlobalCompositeOperation = "color" | "color-burn" | "color-dodge" | "copy" | "darken" | "destination-atop" | "destination-in" | "destination-out" | "destination-over" | "difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "lighter" | "luminosity" | "multiply" | "overlay" | "saturation" | "screen" | "soft-light" | "source-atop" | "source-in" | "source-out" | "source-over" | "xor";
 export const drawImage = (
   destination: CanvasRenderingContext2D,
@@ -231,6 +233,7 @@ export class EraserBrush extends fabric.PencilBrush {
     // setCanvasDimensions(el, ctx, canvas, this.canvas.getRetinaScaling());
     // this.effectContext = effectContext;
     this.eventEmitter = new Observable();
+    super._setBrushStyles(canvas.lowerCanvasEl)
   }
 
   /**
@@ -366,7 +369,7 @@ export class EraserBrush extends fabric.PencilBrush {
   /**
    * @override
    */
-  createPath(pathData: fabric.util.TSimplePathData) {
+  createPath(pathData: fabric.util.TSimplePathData): Path {
     const path = super.createPath(pathData);
     path.set(
       this.inverted
@@ -428,14 +431,19 @@ export class EraserBrush extends fabric.PencilBrush {
       //     cancelable: false,
       //   })
       // );
-      this.eventEmitter.fire('cancel', { cancelable: false })
+      this.eventEmitter.fire('cancel', { cancelable: false });
+      setTimeout(() => {
+        this.canvas.requestRenderAll();
+      }, 16);
       return;
     }
 
     const path = this.createPath(this.convertPointsToSVGPath(points));
+    const eraserPath = new EraserPath(points, this.convertPointsToSVGPath(points), { width: this.width })
+    eraserPath.globalCompositeOperation = 'destination-out'
     const targets = walk(this.canvas.getObjects(), path);
     this.eventEmitter.fire('end', {
-      path: this['_points'],
+      path,
       targets
     })
 
@@ -458,9 +466,11 @@ export class EraserBrush extends fabric.PencilBrush {
     // this.commit({ path, targets });
     //
     this.canvas.clearContext(this.canvas.contextTop);
-    this.canvas.add(path);
-    this.canvas.requestRenderAll();
-    path.setCoords();
+    this.canvas.add(eraserPath);
+    setTimeout(() => {
+      this.canvas.requestRenderAll();
+    }, 16);
+    eraserPath.setCoords();
     this._resetShadow();
   }
 

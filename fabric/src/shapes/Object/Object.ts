@@ -778,7 +778,7 @@ export class FabricObject<
     this.transform(ctx);
     this._setOpacity(ctx);
     this._setShadow(ctx);
-    if (this.shouldCache()) {
+    if (false) {
       // todo
       // how to deal with cache
       // currently _cache is the same as ctx

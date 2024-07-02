@@ -35,6 +35,9 @@ struct Index {
   private operationStack: TOperationItem[] = []
   private operationUndoStack: TOperationItem[] = []
   private mode: 'eraser' | 'pen' | 'normal' = 'eraser'
+  private originMouseDownPoint: Point = new Point(0, 0)
+  private rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300 }
+  private drawRect: fabric.Rect = new fabric.Rect(this.rectConfig)
   build() {
     Row() {
       Column() {
@@ -79,16 +82,16 @@ struct Index {
             canvas.backgroundImage = imageInstance
 
             // custom path
-            const path: TOptions<fabric.PathProps> = {"type":"Path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
-            fabric.Path.fromObject(path).then((pathInstance: fabric.FabricObject) => {
-              pathInstance.clone()
-                .then(clone => {
-                  clone.stroke = 'red'
-                  clone.top = pathInstance.top + 50
-                  canvas.add(clone)
-                })
-              canvas.add(pathInstance)
-            })
+            // const path: TOptions<fabric.PathProps> = {"type":"Path","originX":"center","originY":"center","left":200,"top":420,"width":232,"height":49,"fill":null,"overlayFill":null,"stroke":"#aaf","strokeWidth":10,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":true,"transparentCorners":true,"TargetFind":false,"visible":true,"path":[["M",0,42],["Q",0,42,0,42],["Q",0,42,0.5,42],["Q",1,42,1,41.5],["Q",1,41,3,39],["Q",5,37,10.5,31],["Q",16,25,24.5,18],["Q",33,11,37,8],["Q",41,5,45.5,2.5],["Q",50,0,52.5,0],["Q",55,0,57,0],["Q",59,0,60,3],["Q",61,6,64,19.5],["Q",67,33,68,37],["Q",69,41,69.5,44],["Q",70,47,71.5,48],["Q",73,49,76,49],["Q",79,49,85.5,44],["Q",92,39,100.5,33],["Q",109,27,113.5,23],["Q",118,19,125.5,16],["Q",133,13,139.5,13.5],["Q",146,14,149,17.5],["Q",152,21,153.5,24],["Q",155,27,156.5,29.5],["Q",158,32,160.5,32.5],["Q",163,33,166,32],["Q",169,31,172,27.5],["Q",175,24,179,20.5],["Q",183,17,185.5,14.5],["Q",188,12,189.5,12],["Q",191,12,192.5,12],["Q",194,12,195.5,15],["Q",197,18,199,19.5],["Q",201,21,203,22.5],["Q",205,24,207.5,24],["Q",210,24,214.5,23.5],["Q",219,23,222.5,20.5],["Q",226,18,229,15.5],["L",232,13]],"pathOffset":{"x":116,"y":24.5}};
+            // fabric.Path.fromObject(path).then((pathInstance: fabric.FabricObject) => {
+            //   pathInstance.clone()
+            //     .then(clone => {
+            //       clone.stroke = 'red'
+            //       clone.top = pathInstance.top + 50
+            //       canvas.add(clone)
+            //     })
+            //   canvas.add(pathInstance)
+            // })
 
             // animation png
             const animateImageConfig: TOptions<fabric.FabricImage> = {
@@ -252,78 +255,102 @@ struct Index {
             canvas.add(text1, text2, text3, text4, text5);
             this.fabricInstance = canvas
             canvas.selection = false
+            // canvas.on('object:added', obj => {
+            //   console.log(obj.target)
+            // })
+            // canvas.getObjects()
+            // canvas.on('object:added', (obj) => {
+            //   console.log(JSON.stringify(obj.target))
+            // })
+            // const createRect = () => {
+            //   const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 250, top: 300, fill: '#f55', strokeWidth: 0, erasable: false }
+            //   const rect = new fabric.Rect(rectConfig)
+            //   rect.setControlsVisibility({
+            //     tl: true,
+            //   })
+            //   rect.centeredScaling = true
+            //   rect.minScaleLimit = 0.5
+            //   rect.controls.tl = new fabric.Control(deleteControlConfig)
+            //   rect.controls.br = new fabric.Control(scaleControlConfig)
+            //   return rect
+            // }
+            // canvas.on('mouse:down', async (event) => {
+            //   if (this.fabricInstance.isDrawingMode || event.target) return
+            //   this.drawRect = createRect()
+            //   console.log(JSON.stringify(event.viewportPoint))
+            //   this.drawRect.top = event.viewportPoint.y
+            //   this.drawRect.left = event.viewportPoint.x
+            //   this.drawRect.width = 2
+            //   this.drawRect.height = 2
+            //   this.originMouseDownPoint = new Point(event.viewportPoint.x, event.viewportPoint.y)
+            //   this.fabricInstance.add(this.drawRect)
+            //   this.fabricInstance.setActiveObject(this.drawRect)
+            // })
+            // canvas.on('mouse:move', (event) => {
+            //   if (this.fabricInstance.isDrawingMode) return
+            //   this.drawRect.width = event.viewportPoint.x - this.originMouseDownPoint.x
+            //   this.drawRect.height = event.viewportPoint.y - this.originMouseDownPoint.y
+            //   // rect.renderControls(this.fabricInstance.getContext())
+            //   // rect.render(this.fabricInstance.getContext())
+            //   this.fabricInstance.renderAll()
+            // })
+            // canvas.on('mouse:up', (event) => {
+            //   // if (Math.abs(event.viewportPoint.x - this.originMouseDownPoint.x) < 10) {
+            //   //   this.fabricInstance.remove(rect)
+            //   // }
+            // })
+            canvas.on('mouse:down', async (event) => {
+              console.log(JSON.stringify(event.target))
+            })
+            this.fabricInstance.clear()
           })
           .width(this.canvasWidth)
           .height(this.canvasHeight)
           .zIndex(1)
+        Button('normal')
+          .onClick(() => {
+            this.fabricInstance.isDrawingMode = false
+            this.fabricInstance.freeDrawingBrush = undefined
+            this.fabricInstance.lowerCanvasEl.globalCompositeOperation = 'source-over'
+          })
         Button('add')
           .onClick(() => {
-            const rectConfig: TOptions<RectProps> = { width: 50, height: 50, left: 150, top: 200, fill: 'blue', strokeWidth: 0, objectCaching: false }
+            const rectConfig: TOptions<RectProps> = { width: this.canvasWidth, height: this.canvasHeight, left: 0, top: 0, fill: 'blue', strokeWidth: 0 }
             const rect = new fabric.Rect(rectConfig)
+            // rect.globalCompositeOperation = 'destination-out'
             this.fabricInstance.add(rect)
-            this.fabricInstance.renderAll()
           })
-        Button('undo')
+        // Button('undo')
+        //   .onClick(() => {
+        //     const object = this.fabricInstance['_objects'].pop()
+        //     if (object) {
+        //       this.fabricInstance.renderAll()
+        //       this.operationUndoStack.push({
+        //         type: 'eraser',
+        //         path: object
+        //       })
+        //     }
+        //   })
+        // Button('redo')
+        //   .onClick(() => {
+        //     const operationItem = this.operationUndoStack.pop()
+        //     if (operationItem) {
+        //       this.fabricInstance.add(operationItem.path)
+        //     }
+        //   })
+        Button('refreash')
           .onClick(() => {
-            const operationItem = this.operationStack.pop()
-            if (operationItem && operationItem.type === 'pen') {
-              if (operationItem.type === 'pen') {
-                const object = this.fabricInstance['_objects'].pop()
-                if (object) {
-                  this.operationUndoStack.push({
-                    path: object,
-                    type: 'pen'
-                  })
-                  this.fabricInstance.requestRenderAll()
-                }
-              } else {
-                if (this.fabricInstance.freeDrawingBrush) {
-                  this.fabricInstance.freeDrawingBrush['_points'] = operationItem.path
-                  this.fabricInstance.freeDrawingBrush['_render']()
-                  this.operationUndoStack.push(operationItem)
-                }
-              }
-            }
-          })
-        Button('redo')
-          .onClick(() => {
-
-            const operationItem = this.operationUndoStack.pop()
-
-            if (operationItem && operationItem.type === 'pen') {
-              if (operationItem.type === 'pen') {
-                const object = this.fabricInstance['_objects'].pop()
-                if (object) {
-                  this.operationUndoStack.push({
-                    path: object,
-                    type: 'pen'
-                  })
-                  this.fabricInstance.requestRenderAll()
-                }
-              } else {
-                if (this.fabricInstance.freeDrawingBrush) {
-                  this.fabricInstance.freeDrawingBrush['_points'] = operationItem.path
-                  this.fabricInstance.freeDrawingBrush['_render']()
-                  this.operationUndoStack.push(operationItem)
-                }
-              }
-            }
+            this.fabricInstance.requestRenderAll()
+            console.log(JSON.stringify(this.fabricInstance['_objects']))
           })
         Button('画笔')
           .onClick(() => {
             this.mode = 'pen'
             const pen = new fabric.PencilBrush(this.fabricInstance)
             pen.width = 20
-            pen.color = 'red'
+            pen.color = 'black'
             this.fabricInstance.isDrawingMode = true
             this.fabricInstance.freeDrawingBrush = pen
-            this.fabricInstance.off({'object:added': () => {}})
-            this.fabricInstance.on('object:added', (event: TObjectAddedCallBack) => {
-              this.operationStack.push({
-                path: event.target,
-                type: 'pen'
-              })
-            })
           })
         Button('橡皮擦')
           .onClick(() => {
@@ -332,19 +359,23 @@ struct Index {
             const eraser = new fabric.EraserBrush(this.fabricInstance)
             eraser.width = 20
             eraser.color = 'white'
-            eraser.on('end', event => {
-              const path = event.path
-              this.operationStack.push({
-                type: 'eraser',
-                path
-              })
-            })
             this.fabricInstance.freeDrawingBrush = eraser
           })
-        Button('添加矩形')
+        Button('橡皮擦宽度+5')
           .onClick(() => {
-            this.mode = 'normal'
-            this.fabricInstance.isDrawingMode = false
+            if (this.fabricInstance.freeDrawingBrush) {
+              this.mode = 'eraser'
+              this.fabricInstance.isDrawingMode = true
+              const eraser = new fabric.EraserBrush(this.fabricInstance)
+              eraser.width = this.fabricInstance.freeDrawingBrush.width + 10
+              eraser.color = 'white'
+              this.fabricInstance.freeDrawingBrush = eraser
+            }
+          })
+        Button('获取earserPath')
+          .onClick(() => {
+            const objects = this.fabricInstance['_objects']
+            console.log(JSON.stringify(objects), 'EraserPath')
           })
         Canvas(this.upperContext)
           .width(this.canvasWidth)
@@ -388,5 +419,6 @@ struct Index {
     }
     .width(this.canvasWidth)
     .height(this.canvasHeight)
+    .backgroundColor('red')
   }
 }

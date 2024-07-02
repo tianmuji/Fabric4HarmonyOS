@@ -97,7 +97,6 @@ export class Rect<
     const ry = this.ry ? Math.min(this.ry, h / 2) : 0;
     const isRounded = rx !== 0 || ry !== 0;
     ctx.beginPath();
-
     ctx.moveTo(x + rx, y);
 
     ctx.lineTo(x + w - rx, y);

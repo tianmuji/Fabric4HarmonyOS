@@ -266,14 +266,14 @@ type WithBeforeSuffix<T extends string> = T | BeforeSuffix<T>;
 
 
 type TPointerEvents<Prefix extends string> =
-Record<'mousedown', TPointerEventInfo> &
-Record<'mousedown:before', TPointerEventInfo> &
-Record<'mousemove', TPointerEventInfo> &
-Record<'mousemove:before', TPointerEventInfo> &
-Record<'mousedbclick', TPointerEventInfo> &
-Record<'mousedbclick:before', TPointerEventInfo> &
+Record<'mouse:down', TPointerEventInfo> &
+Record<'mouse:down:before', TPointerEventInfo> &
+Record<'mouse:move', TPointerEventInfo> &
+Record<'mouse:move:before', TPointerEventInfo> &
+Record<'mouse:dbclick', TPointerEventInfo> &
+Record<'moused:bclick:before', TPointerEventInfo> &
 Record<
-    'mouseup',
+    'mouse:up',
     TPointerEventInfo & {
       isClick: boolean;
       currentTarget?: FabricObject;

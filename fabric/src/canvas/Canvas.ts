@@ -998,9 +998,6 @@ export class Canvas extends SelectableCanvas implements CanvasOptions {
     this.fire(`mouse:${eventType}`, options);
     // this may be a little be more complicated of what we want to handle
     target && target.fire(`mouse${eventType}`, options);
-    if (eventType === 'move') {
-      console.log(`mouse${eventType}`);
-    }
     for (let i = 0; i < targets.length; i++) {
       targets[i] !== target && targets[i].fire(`mouse${eventType}`, options);
     }
