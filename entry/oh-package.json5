@@ -8,7 +8,6 @@
     "graphic",
     "graphics",
     "SVG",
-    "node-canvas",
     "parser",
     "HTML5",
     "object model"
@@ -17,7 +16,7 @@
   "description": "adopted from fabric.js to run in HarmonyOS, Object model for HTML5 canvas, and SVG-to-canvas parser. su",
   "main": "Index.ts",
   "type": "module",
-  "version": "6.0.0-rc1",
+  "version": "V1.0.0",
   "dependencies": {
   },
   "license": "MIT",
