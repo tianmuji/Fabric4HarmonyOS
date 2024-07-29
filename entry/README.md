@@ -13,6 +13,9 @@
 代码托管在github, 有问题可以在下面的链接中提出
 https://github.com/tianmuji/Fabric4HarmonyOS
 
+## 视频demo
+https://ss-static.intsig.net/1t8.76agnk1r3.5a6b889444a8ac1a207800ed750e5198.mp4
+
 ## 下载安装
 
 ```javascript
