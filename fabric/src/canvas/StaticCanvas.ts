@@ -2,7 +2,7 @@ import { config } from '../config';
 import { CENTER, VERSION } from '../constants';
 import type { CanvasEvents, StaticCanvasEvents } from '../EventTypeDefs';
 import type { Gradient } from '../gradient/Gradient';
-import { Collection, createCollectionMixin, isCollection } from '../Collection';
+import { Collection, isCollection } from '../Collection';
 import { CommonMethods } from '../CommonMethods';
 import type { Pattern } from '../Pattern';
 import { Point } from '../Point';

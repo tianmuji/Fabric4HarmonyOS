@@ -1,5 +1,5 @@
 import type { CollectionEvents, ObjectEvents } from '../EventTypeDefs';
-import { createCollectionMixin, GroupCollection } from '../Collection';
+import { GroupCollection } from '../Collection';
 import type { TClassProperties, TSVGReviver, TOptions } from '../typedefs';
 import {
   invertTransform,

@@ -7,6 +7,7 @@ import type { TextStyleDeclaration } from './Text/StyledText';
 import type { SerializedITextProps, ITextProps } from './IText/IText';
 import type { ITextEvents } from './IText/ITextBehavior';
 import type { TextLinesInfo } from './Text/Text';
+import { Control } from '../../Index';
 
 // @TODO: Many things here are configuration related and shouldn't be on the class nor prototype
 // regexes, list of properties that are not suppose to change by instances, magic consts.
@@ -94,7 +95,7 @@ export class Textbox<
 
   static ownDefaults: Record<string, any> = textboxDefaultValues;
 
-  static getDefaults() {
+  static getDefaults(): {     controls: {         mr: Control;         ml: Control;         mb: Control;         mt: Control;         tl: Control;         tr: Control;         bl: Control;         br: Control;         mtr: Control;     }; } {
     return {
       ...super.getDefaults(),
       controls: createTextboxDefaultControls(),

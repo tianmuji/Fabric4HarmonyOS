@@ -162,7 +162,6 @@ export type {
   SerializedImageProps,
   ImageProps,
 } from './src/shapes/Image';
-export { createCollectionMixin } from './src/Collection';
 
 export * as util from './src/util';
 
