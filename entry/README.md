@@ -9,6 +9,10 @@
 - 提供canvas交互api
 - 支持擦除
 
+## issue
+代码托管在github, 有问题可以在下面的链接中提出
+https://github.com/tianmuji/Fabric4HarmonyOS
+
 ## 下载安装
 
 ```javascript
